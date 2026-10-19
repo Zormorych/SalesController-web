@@ -12,5 +12,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/catalog/catalog-page').then((m) => m.CatalogPage),
     title: 'Catálogo · SalesController',
   },
+  {
+    path: 'clientes',
+    loadComponent: () => import('./features/customers/customers-page').then((m) => m.CustomersPage),
+    title: 'Clientes · SalesController',
+  },
   { path: '**', redirectTo: '' },
 ];
