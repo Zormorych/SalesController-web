@@ -1,7 +1,37 @@
 <mat-toolbar>
+  @if (narrow()) {
+    <button mat-icon-button aria-label="Abrir el menú" (click)="menu.toggle()">
+      <mat-icon>menu</mat-icon>
+    </button>
+  }
   <a routerLink="/" class="brand">SalesController</a>
 </mat-toolbar>
 
-<main>
-  <router-outlet />
-</main>
+<mat-sidenav-container>
+  <mat-sidenav #menu [mode]="narrow() ? 'over' : 'side'" [opened]="!narrow()">
+    <nav>
+      <mat-nav-list>
+        @for (section of sections; track section.path) {
+          <a
+            mat-list-item
+            [routerLink]="section.path"
+            routerLinkActive
+            #active="routerLinkActive"
+            [routerLinkActiveOptions]="{ exact: section.path === '/' }"
+            [activated]="active.isActive"
+            (click)="narrow() && menu.close()"
+          >
+            <mat-icon matListItemIcon>{{ section.icon }}</mat-icon>
+            <span matListItemTitle class="label">{{ section.label }}</span>
+          </a>
+        }
+      </mat-nav-list>
+    </nav>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <main>
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

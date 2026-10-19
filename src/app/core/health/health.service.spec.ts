@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { SILENT_ERRORS } from '../http/error.interceptor';
 import { BackendHealth, HealthService } from './health.service';
 
 describe('HealthService', () => {
@@ -30,6 +31,8 @@ describe('HealthService', () => {
     request.flush(response);
 
     expect(request.request.method).toBe('GET');
+    // La página de inicio muestra su propio aviso si el backend no responde
+    expect(request.request.context.get(SILENT_ERRORS)).toBe(true);
     expect(received).toEqual(response);
   });
 });
