@@ -1,0 +1,33 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+// En el móvil la tabla se desplaza en horizontal en lugar de desbordar la página
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.number {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.inactive {
+  color: var(--mat-sys-outline);
+}
+
+.actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}
