@@ -7,9 +7,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { filter, switchMap } from 'rxjs';
+import { filter } from 'rxjs';
 import { CatalogItemDialog, CatalogItemDialogData } from './catalog-item-dialog';
-import { CATALOG_LABELS, CatalogItem, CatalogItemRequest, CatalogKind } from './catalog.models';
+import { CATALOG_LABELS, CatalogItem, CatalogKind } from './catalog.models';
 import { CatalogService } from './catalog.service';
 
 // Tabla de productos o de personalizaciones, con alta, edición y activar/desactivar
@@ -44,29 +44,28 @@ export class CatalogList {
   }
 
   protected create(): void {
-    this.openDialog({ kind: this.kind() })
-      .pipe(switchMap((request) => this.service.create(this.kind(), request)))
-      .subscribe(() => this.items.reload());
+    const kind = this.kind();
+    this.openDialog({ kind, save: (request) => this.service.create(kind, request) });
   }
 
   protected edit(item: CatalogItem): void {
-    this.openDialog({ kind: this.kind(), item })
-      .pipe(switchMap((request) => this.service.update(this.kind(), item.id, request)))
-      .subscribe(() => this.items.reload());
+    const kind = this.kind();
+    this.openDialog({ kind, item, save: (request) => this.service.update(kind, item.id, request) });
   }
 
   protected toggleActive(item: CatalogItem): void {
     this.service.setActive(this.kind(), item.id, !item.active).subscribe(() => this.items.reload());
   }
 
-  // Solo sigue si se cerró con "Guardar"
-  private openDialog(data: CatalogItemDialogData) {
-    return this.dialog
-      .open<CatalogItemDialog, CatalogItemDialogData, CatalogItemRequest>(CatalogItemDialog, {
+  // El diálogo guarda él mismo; si se cerró con algo guardado, se recarga la tabla
+  private openDialog(data: CatalogItemDialogData): void {
+    this.dialog
+      .open<CatalogItemDialog, CatalogItemDialogData, CatalogItem>(CatalogItemDialog, {
         data,
         width: '420px',
       })
       .afterClosed()
-      .pipe(filter((request): request is CatalogItemRequest => !!request));
+      .pipe(filter((saved) => !!saved))
+      .subscribe(() => this.items.reload());
   }
 }

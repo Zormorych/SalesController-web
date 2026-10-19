@@ -82,7 +82,10 @@ describe('CatalogList', () => {
     const fixture = await render([]);
     const page = fixture.nativeElement as HTMLElement;
     const request = { name: 'Camiseta Fan', salePrice: 15, purchaseCost: 6.5 };
-    dialog.open.mockReturnValue({ afterClosed: () => of(request) });
+    // Como el diálogo real: guarda con la función que recibe y se cierra con lo guardado
+    dialog.open.mockImplementation((_component, config) => ({
+      afterClosed: () => config.data.save(request),
+    }));
 
     page.querySelector<HTMLButtonElement>('[data-testid="new"]')!.click();
     const created = http.expectOne('/api/catalog/products');

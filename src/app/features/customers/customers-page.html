@@ -1,0 +1,72 @@
+<h1>Clientes</h1>
+
+<div class="toolbar">
+  <mat-form-field subscriptSizing="dynamic" class="search">
+    <mat-label>Buscar por nombre o teléfono</mat-label>
+    <mat-icon matPrefix>search</mat-icon>
+    <input
+      matInput
+      data-testid="search"
+      [value]="search()"
+      (input)="search.set($any($event.target).value)"
+    />
+  </mat-form-field>
+  <button mat-flat-button data-testid="new" (click)="create()">
+    <mat-icon>person_add</mat-icon>
+    Nuevo cliente
+  </button>
+</div>
+
+<div class="table-wrapper">
+  <table mat-table [dataSource]="customers.value() ?? []">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Nombre</th>
+      <td mat-cell *matCellDef="let customer">{{ customer.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="phone">
+      <th mat-header-cell *matHeaderCellDef>WhatsApp</th>
+      <td mat-cell *matCellDef="let customer">
+        @if (whatsappUrl(customer.phone); as url) {
+          <a data-testid="whatsapp" [href]="url" target="_blank" rel="noopener">{{
+            customer.phone
+          }}</a>
+        }
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="notes">
+      <th mat-header-cell *matHeaderCellDef>Notas</th>
+      <td mat-cell *matCellDef="let customer" class="notes">{{ customer.notes }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let customer" class="actions">
+        <button
+          mat-icon-button
+          data-testid="edit"
+          matTooltip="Editar"
+          aria-label="Editar"
+          (click)="edit(customer)"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="empty" [attr.colspan]="columns.length">
+        @if (customers.isLoading()) {
+          Cargando…
+        } @else if (search()) {
+          Ningún cliente coincide con la búsqueda.
+        } @else {
+          Todavía no hay clientes.
+        }
+      </td>
+    </tr>
+  </table>
+</div>

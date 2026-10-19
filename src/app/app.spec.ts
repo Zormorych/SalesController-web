@@ -30,7 +30,8 @@ describe('App', () => {
     expect(links.map((link) => link.querySelector('.label')?.textContent?.trim())).toEqual([
       'Inicio',
       'Catálogo',
+      'Clientes',
     ]);
-    expect(links.map((link) => link.getAttribute('href'))).toEqual(['/', '/catalogo']);
+    expect(links.map((link) => link.getAttribute('href'))).toEqual(['/', '/catalogo', '/clientes']);
   });
 });
