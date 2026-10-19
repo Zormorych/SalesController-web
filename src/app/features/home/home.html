@@ -1,0 +1,18 @@
+<h1>Inicio</h1>
+
+<mat-card appearance="outlined">
+  <mat-card-content>
+    <div class="status" data-testid="backend-status">
+      @if (backend.isLoading()) {
+        <mat-spinner diameter="20" />
+        <span>Comprobando el backend…</span>
+      } @else if (backend.error()) {
+        <mat-icon class="down">cloud_off</mat-icon>
+        <span>No se puede conectar con el backend. ¿Está arrancado en el puerto 8081?</span>
+      } @else {
+        <mat-icon class="up">cloud_done</mat-icon>
+        <span>Backend conectado ({{ backend.value()?.application }})</span>
+      }
+    </div>
+  </mat-card-content>
+</mat-card>

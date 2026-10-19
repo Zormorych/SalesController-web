@@ -1,0 +1,13 @@
+.status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.up {
+  color: var(--mat-sys-primary);
+}
+
+.down {
+  color: var(--mat-sys-error);
+}
