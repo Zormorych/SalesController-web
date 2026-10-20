@@ -36,6 +36,8 @@ export class App {
   protected readonly sections: Section[] = [
     { path: '/', label: 'Inicio', icon: 'home' },
     { path: '/catalogo', label: 'Catálogo', icon: 'checkroom' },
+    { path: '/clientes', label: 'Clientes', icon: 'group' },
+    { path: '/pedidos', label: 'Pedidos', icon: 'receipt_long' },
   ];
 
   protected readonly narrow = toSignal(

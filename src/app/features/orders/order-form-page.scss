@@ -1,0 +1,37 @@
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+}
+
+.customer {
+  flex: 1 1 240px;
+}
+
+.notes {
+  flex: 2 1 260px;
+}
+
+.line {
+  margin-bottom: 16px;
+}
+
+mat-card-header {
+  align-items: center;
+}
+
+.remove {
+  margin-left: auto;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.total {
+  margin-left: auto;
+  font: var(--mat-sys-title-medium);
+}

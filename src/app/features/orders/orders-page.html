@@ -1,0 +1,74 @@
+<h1>Pedidos</h1>
+
+<div class="toolbar">
+  <mat-form-field subscriptSizing="dynamic" class="customer">
+    <mat-label>Cliente</mat-label>
+    <mat-select [value]="customerId()" (valueChange)="customerId.set($event)">
+      <mat-option [value]="null">Todos los clientes</mat-option>
+      @for (customer of customers.value() ?? []; track customer.id) {
+        <mat-option [value]="customer.id">{{ customer.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <a mat-flat-button data-testid="new" routerLink="/pedidos/nuevo">
+    <mat-icon>add</mat-icon>
+    Nuevo pedido
+  </a>
+</div>
+
+<div class="table-wrapper">
+  <table mat-table [dataSource]="orders.value() ?? []">
+    <ng-container matColumnDef="orderNumber">
+      <th mat-header-cell *matHeaderCellDef>Pedido</th>
+      <td mat-cell *matCellDef="let order">
+        <a [routerLink]="['/pedidos', order.id]">{{ order.orderNumber }}</a>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="orderDate">
+      <th mat-header-cell *matHeaderCellDef>Fecha</th>
+      <td mat-cell *matCellDef="let order">{{ order.orderDate | date: 'dd/MM/yyyy' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="customerName">
+      <th mat-header-cell *matHeaderCellDef>Cliente</th>
+      <td mat-cell *matCellDef="let order">{{ order.customerName }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="activeLines">
+      <th mat-header-cell *matHeaderCellDef class="number">Camisetas</th>
+      <td mat-cell *matCellDef="let order" class="number">{{ order.activeLines }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="totalSale">
+      <th mat-header-cell *matHeaderCellDef class="number">Total</th>
+      <td mat-cell *matCellDef="let order" class="number">{{ order.totalSale | currency }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="totalProfit">
+      <th mat-header-cell *matHeaderCellDef class="number">Beneficio</th>
+      <td mat-cell *matCellDef="let order" class="number">{{ order.totalProfit | currency }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="progress">
+      <th mat-header-cell *matHeaderCellDef>Estado</th>
+      <td mat-cell *matCellDef="let order">
+        <span class="badge" [attr.data-progress]="order.progress">{{
+          progressLabel(order.progress)
+        }}</span>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="empty" [attr.colspan]="columns.length">
+        @if (orders.isLoading()) {
+          Cargando…
+        } @else {
+          No hay pedidos.
+        }
+      </td>
+    </tr>
+  </table>
+</div>

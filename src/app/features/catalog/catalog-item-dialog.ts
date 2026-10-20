@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { Observable } from 'rxjs';
 import { notBlank } from '../../shared/validators';
 import { CATALOG_LABELS, CatalogItem, CatalogItemRequest, CatalogKind } from './catalog.models';
 
@@ -11,9 +12,11 @@ export interface CatalogItemDialogData {
   kind: CatalogKind;
   // Sin item: alta. Con item: edición
   item?: CatalogItem;
+  // Guarda en el backend. El diálogo solo se cierra si sale bien: si falla, lo escrito se conserva
+  save: (request: CatalogItemRequest) => Observable<CatalogItem>;
 }
 
-// Alta o edición de un producto o una personalización. Devuelve la petición al cerrar con "Guardar"
+// Alta o edición de un producto o una personalización. Se cierra con lo guardado
 @Component({
   selector: 'app-catalog-item-dialog',
   imports: [
@@ -27,12 +30,13 @@ export interface CatalogItemDialogData {
 })
 export class CatalogItemDialog {
   private readonly data = inject<CatalogItemDialogData>(MAT_DIALOG_DATA);
-  private readonly dialogRef = inject(MatDialogRef<CatalogItemDialog, CatalogItemRequest>);
+  private readonly dialogRef = inject(MatDialogRef<CatalogItemDialog, CatalogItem>);
   private readonly labels = CATALOG_LABELS[this.data.kind];
 
   protected readonly title = this.data.item
     ? `Editar ${this.labels.singular}`
     : this.labels.newItem;
+  protected readonly saving = signal(false);
 
   // Mismas reglas que el backend: nombre obligatorio de hasta 120 caracteres y precios no negativos
   protected readonly form = inject(FormBuilder).group({
@@ -48,10 +52,12 @@ export class CatalogItemDialog {
     }
     // Los validadores garantizan que no hay nulos
     const { name, salePrice, purchaseCost } = this.form.getRawValue();
-    this.dialogRef.close({
-      name: name!.trim(),
-      salePrice: salePrice!,
-      purchaseCost: purchaseCost!,
-    });
+    this.saving.set(true);
+    this.data
+      .save({ name: name!.trim(), salePrice: salePrice!, purchaseCost: purchaseCost! })
+      .subscribe({
+        next: (item) => this.dialogRef.close(item),
+        error: () => this.saving.set(false),
+      });
   }
 }

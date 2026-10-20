@@ -43,6 +43,16 @@ describe('CatalogService', () => {
     expect(updated.request.body).toEqual(request);
   });
 
+  it('gets the sizes with their Spanish labels', () => {
+    const sizes = [{ code: 'KIDS_16', label: '16 (niño)' }];
+    let received: unknown;
+
+    service.sizes().subscribe((result) => (received = result));
+    http.expectOne('/api/catalog/sizes').flush(sizes);
+
+    expect(received).toEqual(sizes);
+  });
+
   it('activates and deactivates an item', () => {
     service.setActive('customizations', 2, false).subscribe();
     service.setActive('customizations', 2, true).subscribe();
