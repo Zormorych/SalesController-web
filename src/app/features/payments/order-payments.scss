@@ -1,0 +1,38 @@
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  margin-bottom: 12px;
+  font: var(--mat-sys-title-small);
+
+  button {
+    margin-left: auto;
+  }
+}
+
+.refund {
+  color: var(--mat-sys-error);
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.number {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.row-actions {
+  text-align: right;
+}
+
+.voided td {
+  color: var(--mat-sys-outline);
+  text-decoration: line-through;
+}
+
+.empty {
+  color: var(--mat-sys-on-surface-variant);
+}

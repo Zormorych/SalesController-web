@@ -13,6 +13,7 @@ import { filter, forkJoin, Observable, switchMap } from 'rxjs';
 import { ConfirmDialog, ConfirmDialogData } from '../../shared/confirm-dialog';
 import { whatsappUrl } from '../../shared/whatsapp';
 import { CatalogService } from '../catalog/catalog.service';
+import { OrderPayments } from '../payments/order-payments';
 import { CustomersService } from '../customers/customers.service';
 import { LINE_STATUS_LABELS, PROGRESS_LABELS } from './order-labels';
 import { OrderHeaderDialog, OrderHeaderDialogData } from './order-header-dialog';
@@ -32,6 +33,7 @@ import { OrdersService } from './orders.service';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    OrderPayments,
   ],
   templateUrl: './order-detail-page.html',
   styleUrl: './order-detail-page.scss',
