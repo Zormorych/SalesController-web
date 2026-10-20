@@ -31,7 +31,13 @@ describe('App', () => {
       'Inicio',
       'Catálogo',
       'Clientes',
+      'Pedidos',
     ]);
-    expect(links.map((link) => link.getAttribute('href'))).toEqual(['/', '/catalogo', '/clientes']);
+    expect(links.map((link) => link.getAttribute('href'))).toEqual([
+      '/',
+      '/catalogo',
+      '/clientes',
+      '/pedidos',
+    ]);
   });
 });

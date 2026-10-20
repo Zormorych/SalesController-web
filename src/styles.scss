@@ -43,3 +43,32 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+// Etiqueta de estado (pedidos, camisetas, lotes...). El color depende del estado
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font: var(--mat-sys-label-medium);
+  white-space: nowrap;
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+
+  &[data-progress='READY_TO_DELIVER'],
+  &[data-status='RECEIVED'] {
+    background: var(--mat-sys-tertiary-container);
+    color: var(--mat-sys-on-tertiary-container);
+  }
+
+  &[data-progress='COMPLETED'],
+  &[data-status='DELIVERED'] {
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+  }
+
+  &[data-progress='CANCELLED'],
+  &[data-status='CANCELLED'] {
+    background: var(--mat-sys-error-container);
+    color: var(--mat-sys-on-error-container);
+  }
+}
