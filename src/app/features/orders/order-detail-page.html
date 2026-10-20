@@ -1,0 +1,153 @@
+<a mat-button routerLink="/pedidos" class="back">
+  <mat-icon>arrow_back</mat-icon>
+  Pedidos
+</a>
+
+@if (order.value(); as order) {
+  <div class="title">
+    <h1>Pedido {{ order.orderNumber }}</h1>
+    <span class="badge" [attr.data-progress]="order.progress">{{
+      progressLabel(order.progress)
+    }}</span>
+  </div>
+
+  <mat-card appearance="outlined" class="header">
+    <mat-card-content>
+      <dl>
+        <dt>Cliente</dt>
+        <dd>
+          {{ order.customer?.name }}
+          @if (whatsappUrl(order.customer?.phone ?? null); as url) {
+            ·
+            <a data-testid="whatsapp" [href]="url" target="_blank" rel="noopener">{{
+              order.customer?.phone
+            }}</a>
+          }
+        </dd>
+        <dt>Fecha</dt>
+        <dd>{{ order.orderDate | date: 'dd/MM/yyyy' }}</dd>
+        @if (order.notes) {
+          <dt>Notas</dt>
+          <dd>{{ order.notes }}</dd>
+        }
+      </dl>
+      @if (editable()) {
+        <div class="actions">
+          <button mat-stroked-button data-testid="edit-header" (click)="editHeader(order)">
+            <mat-icon>edit</mat-icon>
+            Editar datos
+          </button>
+          <button mat-button data-testid="cancel-order" class="danger" (click)="cancelOrder(order)">
+            Cancelar pedido
+          </button>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <div class="section-title">
+    <h2>Camisetas</h2>
+    @if (editable()) {
+      <button mat-flat-button data-testid="add-line" (click)="addLine(order)">
+        <mat-icon>add</mat-icon>
+        Añadir camiseta
+      </button>
+    }
+  </div>
+
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="order.lines">
+      <ng-container matColumnDef="product">
+        <th mat-header-cell *matHeaderCellDef>Camiseta</th>
+        <td mat-cell *matCellDef="let line">{{ line.productName }} · {{ line.kitName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="size">
+        <th mat-header-cell *matHeaderCellDef>Talla</th>
+        <td mat-cell *matCellDef="let line">{{ line.sizeLabel }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="customizations">
+        <th mat-header-cell *matHeaderCellDef>Personalización</th>
+        <td mat-cell *matCellDef="let line">{{ customizationsText(line) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let line">
+          <span class="badge" [attr.data-status]="line.status">{{ statusLabel(line.status) }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="totalSale">
+        <th mat-header-cell *matHeaderCellDef class="number">Venta</th>
+        <td mat-cell *matCellDef="let line" class="number">{{ line.totalSale | currency }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="totalCost">
+        <th mat-header-cell *matHeaderCellDef class="number">Coste</th>
+        <td mat-cell *matCellDef="let line" class="number">{{ line.totalCost | currency }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="profit">
+        <th mat-header-cell *matHeaderCellDef class="number">Beneficio</th>
+        <td mat-cell *matCellDef="let line" class="number">{{ line.profit | currency }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let line" class="row-actions">
+          @if (editable() && line.status === 'PENDING') {
+            <button
+              mat-icon-button
+              data-testid="edit-line"
+              matTooltip="Editar camiseta"
+              aria-label="Editar camiseta"
+              (click)="editLine(order, line)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              data-testid="cancel-line"
+              matTooltip="Cancelar camiseta"
+              aria-label="Cancelar camiseta"
+              (click)="cancelLine(order, line)"
+            >
+              <mat-icon>remove_circle_outline</mat-icon>
+            </button>
+          }
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: columns"
+        [class.cancelled]="row.status === 'CANCELLED'"
+      ></tr>
+    </table>
+  </div>
+
+  <mat-card appearance="outlined" class="totals" data-testid="totals">
+    <mat-card-content>
+      <div>
+        <span>Total</span><strong>{{ order.totals.sale | currency }}</strong>
+      </div>
+      <div>
+        <span>Coste</span><strong>{{ order.totals.cost | currency }}</strong>
+      </div>
+      <div>
+        <span>Beneficio</span><strong>{{ order.totals.profit | currency }}</strong>
+      </div>
+      <p class="counts">
+        {{ order.totals.activeLines }}
+        {{ order.totals.activeLines === 1 ? 'camiseta' : 'camisetas' }} ·
+        {{ order.lineCounts.pending }} por pedir · {{ order.lineCounts.ordered }} pedidas ·
+        {{ order.lineCounts.received }} recibidas · {{ order.lineCounts.delivered }} entregadas
+      </p>
+    </mat-card-content>
+  </mat-card>
+} @else if (order.isLoading()) {
+  <p>Cargando…</p>
+}
