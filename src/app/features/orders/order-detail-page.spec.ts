@@ -88,6 +88,19 @@ describe('OrderDetailPage', () => {
     fixture.componentRef.setInput('id', '5');
     TestBed.tick();
     http.expectOne('/api/sales/orders/5').flush(details);
+    // La sección de cobros pide su resumen en cuanto se pinta el pedido
+    await vi.waitFor(() => {
+      TestBed.tick();
+      http.expectOne('/api/sales/orders/5/payments').flush({
+        orderId: 5,
+        orderNumber: details.orderNumber,
+        orderCancelled: details.status === 'CANCELLED',
+        orderTotal: details.totals.sale,
+        paidAmount: 0,
+        pendingAmount: details.totals.sale,
+        payments: [],
+      });
+    });
     await fixture.whenStable();
     page = fixture.nativeElement as HTMLElement;
   }
@@ -115,6 +128,11 @@ describe('OrderDetailPage', () => {
     await render(order);
 
     expect(page.querySelector('h1')?.textContent).toContain('SO-2026-000005');
+    expect(
+      page
+        .querySelector('app-order-payments [data-testid="pending"]')
+        ?.textContent?.replace(/\s+/g, ' '),
+    ).toContain('32,00 €');
     expect(page.querySelector('.badge')?.textContent).toContain('En curso');
     expect(page.querySelector<HTMLAnchorElement>('a[data-testid="whatsapp"]')?.href).toBe(
       'https://wa.me/34600123456',

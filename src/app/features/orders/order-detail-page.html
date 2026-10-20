@@ -148,6 +148,9 @@
       </p>
     </mat-card-content>
   </mat-card>
+
+  <h2>Cobros</h2>
+  <app-order-payments [orderId]="order.id" [orderTotal]="order.totals.sale" />
 } @else if (order.isLoading()) {
   <p>Cargando…</p>
 }
