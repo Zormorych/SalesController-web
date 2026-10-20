@@ -72,3 +72,10 @@ body {
     color: var(--mat-sys-on-error-container);
   }
 }
+
+// Lotes: enviado (camino) y recibido (llegó)
+.badge[data-status='SENT'],
+.badge[data-status='ORDERED'] {
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+}

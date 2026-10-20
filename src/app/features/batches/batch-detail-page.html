@@ -1,0 +1,199 @@
+<a mat-button routerLink="/lotes" class="back">
+  <mat-icon>arrow_back</mat-icon>
+  Lotes
+</a>
+
+@if (batch.value(); as batch) {
+  <div class="title">
+    <h1>Lote {{ batch.batchNumber }}</h1>
+    <span class="badge" [attr.data-status]="batch.status">{{ statusLabel(batch.status) }}</span>
+  </div>
+
+  <mat-card appearance="outlined" class="header">
+    <mat-card-content>
+      <dl>
+        <dt>Creado</dt>
+        <dd>{{ batch.createdAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
+        @if (batch.sentAt) {
+          <dt>Enviado</dt>
+          <dd>{{ batch.sentAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
+        }
+        @if (batch.receivedAt) {
+          <dt>Recibido</dt>
+          <dd>{{ batch.receivedAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
+        }
+        <dt>Envío</dt>
+        <dd>{{ batch.shippingCost | currency }}</dd>
+        @if (batch.notes) {
+          <dt>Notas</dt>
+          <dd>{{ batch.notes }}</dd>
+        }
+      </dl>
+
+      @if (active()) {
+        <div class="actions">
+          @if (batch.lines.length) {
+            <button mat-flat-button data-testid="excel" (click)="downloadExcel(batch)">
+              <mat-icon>download</mat-icon>
+              Descargar Excel
+            </button>
+          }
+          <button mat-stroked-button data-testid="edit" (click)="editDetails(batch)">
+            <mat-icon>edit</mat-icon>
+            Envío y notas
+          </button>
+          @if (open()) {
+            @if (batch.lines.length) {
+              <button mat-stroked-button data-testid="send" (click)="send(batch)">
+                <mat-icon>send</mat-icon>
+                Enviar al fabricante
+              </button>
+            }
+            <button mat-button class="danger" data-testid="discard" (click)="discard(batch)">
+              Descartar lote
+            </button>
+          }
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <div class="section-title">
+    <h2>Camisetas</h2>
+    @if (open()) {
+      <button mat-stroked-button data-testid="add-lines" (click)="addLines(batch)">
+        <mat-icon>add</mat-icon>
+        Añadir camisetas
+      </button>
+    }
+  </div>
+
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="batch.lines">
+      <ng-container matColumnDef="orderNumber">
+        <th mat-header-cell *matHeaderCellDef>Pedido</th>
+        <td mat-cell *matCellDef="let line">
+          <a [routerLink]="['/pedidos', line.orderId]">{{ line.orderNumber }}</a>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="customerName">
+        <th mat-header-cell *matHeaderCellDef>Cliente</th>
+        <td mat-cell *matCellDef="let line">{{ line.customerName }}</td>
+      </ng-container>
+      <ng-container matColumnDef="shirt">
+        <th mat-header-cell *matHeaderCellDef>Camiseta</th>
+        <td mat-cell *matCellDef="let line">{{ shirtText(line) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="size">
+        <th mat-header-cell *matHeaderCellDef>Talla</th>
+        <td mat-cell *matCellDef="let line">{{ line.sizeLabel }}</td>
+      </ng-container>
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let line">
+          <span class="badge" [attr.data-status]="line.status">{{
+            lineStatusLabel(line.status)
+          }}</span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="totalSale">
+        <th mat-header-cell *matHeaderCellDef class="number">Venta</th>
+        <td mat-cell *matCellDef="let line" class="number">{{ line.totalSale | currency }}</td>
+      </ng-container>
+      <ng-container matColumnDef="totalCost">
+        <th mat-header-cell *matHeaderCellDef class="number">Coste</th>
+        <td mat-cell *matCellDef="let line" class="number">{{ line.totalCost | currency }}</td>
+      </ng-container>
+      <ng-container matColumnDef="shippingShare">
+        <th mat-header-cell *matHeaderCellDef class="number">Envío</th>
+        <td mat-cell *matCellDef="let line" class="number">{{ line.shippingShare | currency }}</td>
+      </ng-container>
+      <ng-container matColumnDef="profit">
+        <th mat-header-cell *matHeaderCellDef class="number">Beneficio</th>
+        <td mat-cell *matCellDef="let line" class="number">{{ line.profit | currency }}</td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let line" class="row-actions">
+          @if (open()) {
+            <button
+              mat-icon-button
+              data-testid="remove-line"
+              matTooltip="Quitar del lote"
+              aria-label="Quitar del lote"
+              (click)="removeLine(batch, line)"
+            >
+              <mat-icon>remove_circle_outline</mat-icon>
+            </button>
+          }
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="empty" [attr.colspan]="columns.length">El lote no tiene camisetas.</td>
+      </tr>
+    </table>
+  </div>
+
+  <mat-card appearance="outlined" class="totals" data-testid="totals">
+    <mat-card-content>
+      <div>
+        <span>Camisetas</span><strong>{{ batch.totals.activeLines }}</strong>
+      </div>
+      <div>
+        <span>Venta</span><strong>{{ batch.totals.sale | currency }}</strong>
+      </div>
+      <div>
+        <span>Coste</span><strong>{{ batch.totals.cost | currency }}</strong>
+      </div>
+      <div>
+        <span>Envío</span><strong>{{ batch.totals.shipping | currency }}</strong>
+      </div>
+      <div>
+        <span>Beneficio</span><strong>{{ batch.totals.profit | currency }}</strong>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  @if (batch.missingLines.length) {
+    <section data-testid="missing">
+      <h2>No llegaron</h2>
+      <p class="hint">
+        Se pidieron en este lote pero no llegaron; volvieron a quedar pendientes de pedir.
+      </p>
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="batch.missingLines">
+          <ng-container matColumnDef="orderNumber">
+            <th mat-header-cell *matHeaderCellDef>Pedido</th>
+            <td mat-cell *matCellDef="let line">
+              <a [routerLink]="['/pedidos', line.orderId]">{{ line.orderNumber }}</a>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="customerName">
+            <th mat-header-cell *matHeaderCellDef>Cliente</th>
+            <td mat-cell *matCellDef="let line">{{ line.customerName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="shirt">
+            <th mat-header-cell *matHeaderCellDef>Camiseta</th>
+            <td mat-cell *matCellDef="let line">{{ shirtText(line) }}</td>
+          </ng-container>
+          <ng-container matColumnDef="size">
+            <th mat-header-cell *matHeaderCellDef>Talla</th>
+            <td mat-cell *matCellDef="let line">{{ line.sizeLabel }}</td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Estado actual</th>
+            <td mat-cell *matCellDef="let line">{{ lineStatusLabel(line.status) }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="missingColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: missingColumns"></tr>
+        </table>
+      </div>
+    </section>
+  }
+} @else if (batch.isLoading()) {
+  <p>Cargando…</p>
+}

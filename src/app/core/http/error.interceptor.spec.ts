@@ -75,6 +75,24 @@ describe('errorInterceptor', () => {
     );
   });
 
+  it('reads the Spanish detail when the error comes as a file, as in the Excel download', async () => {
+    http.get('/api/file', { responseType: 'blob' }).subscribe({ error: () => undefined });
+    backend.expectOne('/api/file').flush(
+      new Blob([JSON.stringify({ detail: 'El lote FB-2026-0001 está cancelado' })], {
+        type: 'application/problem+json',
+      }),
+      { status: 409, statusText: 'Conflict' },
+    );
+
+    await vi.waitFor(() =>
+      expect(snackBar.open).toHaveBeenCalledWith(
+        'El lote FB-2026-0001 está cancelado',
+        'Cerrar',
+        expect.anything(),
+      ),
+    );
+  });
+
   it('stays silent for requests that handle their own errors', () => {
     failWith('', 504, new HttpContext().set(SILENT_ERRORS, true));
 
