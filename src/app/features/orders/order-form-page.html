@@ -1,0 +1,70 @@
+<h1>Nuevo pedido</h1>
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div class="header">
+    <mat-form-field class="customer">
+      <mat-label>Cliente</mat-label>
+      <mat-select formControlName="customerId" data-testid="customer">
+        @for (customer of customers.value() ?? []; track customer.id) {
+          <mat-option [value]="customer.id">{{ customer.name }}</mat-option>
+        }
+      </mat-select>
+      <mat-hint>¿No está? Créalo en <a routerLink="/clientes">Clientes</a></mat-hint>
+      <mat-error>Elige el cliente</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Fecha del pedido</mat-label>
+      <input matInput type="date" formControlName="orderDate" />
+      <mat-error>Indica la fecha</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="notes">
+      <mat-label>Notas</mat-label>
+      <input matInput formControlName="notes" maxlength="500" />
+    </mat-form-field>
+  </div>
+
+  <h2>Camisetas</h2>
+  @for (line of form.controls.lines.controls; track line; let i = $index) {
+    <mat-card appearance="outlined" class="line" data-testid="line">
+      <mat-card-header>
+        <mat-card-title>Camiseta {{ i + 1 }}</mat-card-title>
+        @if (form.controls.lines.length > 1) {
+          <button
+            mat-icon-button
+            type="button"
+            class="remove"
+            aria-label="Quitar camiseta"
+            matTooltip="Quitar camiseta"
+            (click)="removeLine(i)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        }
+      </mat-card-header>
+      <mat-card-content>
+        <app-order-line-fields
+          [form]="line"
+          [products]="products.value() ?? []"
+          [customizations]="customizations.value() ?? []"
+          [sizes]="sizes.value() ?? []"
+        />
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <div class="footer">
+    <button mat-stroked-button type="button" data-testid="add-line" (click)="addLine()">
+      <mat-icon>add</mat-icon>
+      Añadir camiseta
+    </button>
+    <span class="total" data-testid="total"
+      >Total: <strong>{{ total() | currency }}</strong></span
+    >
+    <a mat-button routerLink="/pedidos">Cancelar</a>
+    <button mat-flat-button type="submit" data-testid="save" [disabled]="saving()">
+      Guardar pedido
+    </button>
+  </div>
+</form>

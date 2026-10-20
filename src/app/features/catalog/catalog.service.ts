@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CatalogItem, CatalogItemRequest, CatalogKind } from './catalog.models';
+import { CatalogItem, CatalogItemRequest, CatalogKind, Size } from './catalog.models';
 
 @Injectable({ providedIn: 'root' })
 export class CatalogService {
@@ -17,6 +17,11 @@ export class CatalogService {
 
   update(kind: CatalogKind, id: number, request: CatalogItemRequest): Observable<CatalogItem> {
     return this.http.put<CatalogItem>(`/api/catalog/${kind}/${id}`, request);
+  }
+
+  // Tallas comunes a todos los productos, con su nombre en español ("16 (niño)")
+  sizes(): Observable<Size[]> {
+    return this.http.get<Size[]>('/api/catalog/sizes');
   }
 
   // Desactivar no borra: el producto deja de ofrecerse en los pedidos nuevos

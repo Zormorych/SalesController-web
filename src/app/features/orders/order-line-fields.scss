@@ -1,0 +1,35 @@
+// Los campos se colocan en fila y bajan a la siguiente cuando no caben (móvil)
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0 12px;
+}
+
+.product {
+  flex: 2 1 220px;
+}
+
+.kit {
+  flex: 3 1 240px;
+}
+
+.size {
+  flex: 1 1 120px;
+}
+
+.money {
+  flex: 1 1 100px;
+}
+
+.customization {
+  padding-left: 16px;
+  border-left: 3px solid var(--mat-sys-outline-variant);
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 56px;
+}

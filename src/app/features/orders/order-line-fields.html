@@ -1,0 +1,130 @@
+<div class="line" [formGroup]="form()">
+  <div class="row">
+    <mat-form-field class="product">
+      <mat-label>Producto</mat-label>
+      <mat-select
+        formControlName="productId"
+        data-testid="product"
+        (selectionChange)="productChosen($event.value)"
+      >
+        @for (product of products(); track product.id) {
+          <mat-option [value]="product.id">
+            {{ product.name }} · {{ product.salePrice | currency }}
+          </mat-option>
+        }
+      </mat-select>
+      <mat-error>Elige un producto</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="kit">
+      <mat-label>Equipación</mat-label>
+      <input
+        matInput
+        formControlName="kitName"
+        maxlength="160"
+        placeholder="Selección Española blanca 2 estrellas"
+      />
+      <mat-error>Escribe la equipación</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="size">
+      <mat-label>Talla</mat-label>
+      <mat-select formControlName="size" data-testid="size">
+        @for (size of sizes(); track size.code) {
+          <mat-option [value]="size.code">{{ size.label }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>Elige la talla</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="money">
+      <mat-label>Precio</mat-label>
+      <input matInput type="number" formControlName="unitSalePrice" min="0" step="0.01" />
+      <span matTextSuffix>€</span>
+      <mat-error>0 o más</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="money">
+      <mat-label>Coste</mat-label>
+      <input matInput type="number" formControlName="unitPurchaseCost" min="0" step="0.01" />
+      <span matTextSuffix>€</span>
+      <mat-error>0 o más</mat-error>
+    </mat-form-field>
+  </div>
+
+  <div formArrayName="customizations">
+    @for (
+      customization of form().controls.customizations.controls;
+      track customization;
+      let i = $index
+    ) {
+      <div class="row customization" [formGroupName]="i">
+        <mat-form-field class="product">
+          <mat-label>Personalización</mat-label>
+          <mat-select
+            formControlName="customizationId"
+            data-testid="customization"
+            (selectionChange)="customizationChosen(i, $event.value)"
+          >
+            @for (item of customizations(); track item.id) {
+              <mat-option [value]="item.id">
+                {{ item.name }} · {{ item.salePrice | currency }}
+              </mat-option>
+            }
+          </mat-select>
+          <mat-error>Elige una personalización</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="kit">
+          <mat-label>Texto</mat-label>
+          <input
+            matInput
+            formControlName="customText"
+            maxlength="120"
+            placeholder="WILLIAMS JR 17"
+          />
+        </mat-form-field>
+
+        <mat-form-field class="money">
+          <mat-label>Precio</mat-label>
+          <input matInput type="number" formControlName="salePrice" min="0" step="0.01" />
+          <span matTextSuffix>€</span>
+          <mat-error>0 o más</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="money">
+          <mat-label>Coste</mat-label>
+          <input matInput type="number" formControlName="purchaseCost" min="0" step="0.01" />
+          <span matTextSuffix>€</span>
+          <mat-error>0 o más</mat-error>
+        </mat-form-field>
+
+        <div class="buttons">
+          <button
+            mat-stroked-button
+            type="button"
+            data-testid="free"
+            matTooltip="No cobrar esta personalización (sigue contando su coste)"
+            (click)="free(i)"
+          >
+            Gratis
+          </button>
+          <button
+            mat-icon-button
+            type="button"
+            aria-label="Quitar personalización"
+            matTooltip="Quitar personalización"
+            (click)="removeCustomization(i)"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <button mat-button type="button" data-testid="add-customization" (click)="addCustomization()">
+    <mat-icon>add</mat-icon>
+    Añadir personalización
+  </button>
+</div>

@@ -22,5 +22,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/orders/orders-page').then((m) => m.OrdersPage),
     title: 'Pedidos · SalesController',
   },
+  {
+    path: 'pedidos/nuevo',
+    loadComponent: () => import('./features/orders/order-form-page').then((m) => m.OrderFormPage),
+    title: 'Nuevo pedido · SalesController',
+  },
   { path: '**', redirectTo: '' },
 ];
