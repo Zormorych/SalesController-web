@@ -1,0 +1,17 @@
+# Frontend en Docker:   docker compose up -d --build
+# El backend va aparte (su propio docker-compose) y aquí se llega a él por el puerto que publica en este equipo.
+# Los valores entre ${...} se pueden cambiar en un fichero .env (ver .env.example)
+services:
+  web:
+    build: .
+    image: sales-controller-web:local
+    container_name: sales-controller-web
+    environment:
+      # Dónde está el backend visto desde dentro del contenedor. host.docker.internal es "este equipo"
+      BACKEND_URL: ${BACKEND_URL:-http://host.docker.internal:8081}
+    ports:
+      - '${WEB_PORT:-4200}:80'
+    extra_hosts:
+      # En Windows y Mac host.docker.internal ya existe; en Linux hay que declararlo
+      - 'host.docker.internal:host-gateway'
+    restart: unless-stopped

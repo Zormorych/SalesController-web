@@ -1,0 +1,32 @@
+# nginx del frontend. ${BACKEND_URL} lo rellena la imagen de nginx al arrancar (variable de entorno)
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+
+    # Las llamadas a la API van al backend: el navegador solo habla con este servidor, así que no hace falta CORS
+    location /api/ {
+        proxy_pass ${BACKEND_URL};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Ficheros con hash en el nombre (main-AB12CD.js): no cambian nunca, se pueden guardar en caché un año
+    location ~* \.(?:js|css|woff2?|ttf|svg|png|jpg|ico)$ {
+        try_files $uri =404;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Rutas de Angular (/pedidos/5, /lotes...): si no es un fichero, se sirve index.html y el router de Angular
+    # pinta la página. Así recargar el navegador en /pedidos/5 funciona
+    location / {
+        try_files $uri $uri/ /index.html;
+        add_header Cache-Control "no-cache";
+    }
+
+    gzip on;
+    gzip_types text/plain text/css application/javascript application/json image/svg+xml;
+}
