@@ -56,6 +56,20 @@ export class BatchesService {
     return this.http.post<BatchDetails>(`${BASE}/batches/${id}/cancel`, null);
   }
 
+  // Llega el pedido del fabricante. Las que no llegan vuelven a quedar pendientes de pedir y salen del lote;
+  // si no llega ninguna, el backend lo rechaza
+  receive(id: number, missingLineIds: number[]): Observable<BatchDetails> {
+    return this.http.post<BatchDetails>(`${BASE}/batches/${id}/receive`, { missingLineIds });
+  }
+
+  // Una que no llegó la manda después el fabricante: vuelve al lote como recibida y comparte el envío
+  markArrived(id: number, lineId: number): Observable<BatchDetails> {
+    return this.http.post<BatchDetails>(
+      `${BASE}/batches/${id}/missing-lines/${lineId}/arrived`,
+      null,
+    );
+  }
+
   // El Excel para el fabricante, con el nombre de fichero que da el backend ("FB-2026-0004.xlsx")
   excel(id: number): Observable<{ name: string; content: Blob }> {
     return this.http

@@ -18,8 +18,9 @@ import { LineStatus } from '../orders/orders.models';
 import { AddBatchLinesDialog, AddBatchLinesDialogData } from './add-batch-lines-dialog';
 import { BATCH_STATUS_LABELS, shirtText } from './batch-labels';
 import { BatchDetailsDialog, BatchDetailsDialogData } from './batch-details-dialog';
-import { BatchDetails, BatchLine, BatchStatus } from './batches.models';
+import { BatchDetails, BatchLine, BatchStatus, MissingLine } from './batches.models';
 import { BatchesService } from './batches.service';
+import { ReceiveBatchDialog, ReceiveBatchDialogData } from './receive-batch-dialog';
 
 // Detalle de un lote: camisetas con su parte del envío y su beneficio, el Excel y las acciones según su estado
 @Component({
@@ -58,7 +59,14 @@ export class BatchDetailPage {
     'profit',
     'actions',
   ];
-  protected readonly missingColumns = ['orderNumber', 'customerName', 'shirt', 'size', 'status'];
+  protected readonly missingColumns = [
+    'orderNumber',
+    'customerName',
+    'shirt',
+    'size',
+    'status',
+    'actions',
+  ];
   protected readonly batch = rxResource({
     params: () => Number(this.id()),
     stream: ({ params }) => this.service.get(params),
@@ -121,6 +129,23 @@ export class BatchDetailPage {
       confirm: 'Descartar lote',
     })
       .pipe(switchMap(() => this.service.cancel(batch.id)))
+      .subscribe((updated) => this.batch.set(updated));
+  }
+
+  protected receive(batch: BatchDetails): void {
+    this.openDialog<ReceiveBatchDialog, ReceiveBatchDialogData>(ReceiveBatchDialog, {
+      lines: batch.lines,
+      save: (missingLineIds) => this.service.receive(batch.id, missingLineIds),
+    }).subscribe((updated) => this.batch.set(updated));
+  }
+
+  protected markArrived(batch: BatchDetails, line: MissingLine): void {
+    this.confirm({
+      title: '¿Ha llegado esta camiseta?',
+      message: `${shirtText(line)} (${line.sizeLabel}) volverá a este lote como recibida y el envío se repartirá también con ella.`,
+      confirm: 'Ha llegado',
+    })
+      .pipe(switchMap(() => this.service.markArrived(batch.id, line.lineId)))
       .subscribe((updated) => this.batch.set(updated));
   }
 

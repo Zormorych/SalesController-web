@@ -48,10 +48,18 @@
   <div class="section-title">
     <h2>Camisetas</h2>
     @if (editable()) {
-      <button mat-flat-button data-testid="add-line" (click)="addLine(order)">
-        <mat-icon>add</mat-icon>
-        Añadir camiseta
-      </button>
+      <div class="section-actions">
+        @if (order.lineCounts.received > 0) {
+          <button mat-stroked-button data-testid="deliver-all" (click)="deliverAll(order)">
+            <mat-icon>done_all</mat-icon>
+            Entregar todas las recibidas
+          </button>
+        }
+        <button mat-flat-button data-testid="add-line" (click)="addLine(order)">
+          <mat-icon>add</mat-icon>
+          Añadir camiseta
+        </button>
+      </div>
     }
   </div>
 
@@ -115,6 +123,15 @@
               (click)="cancelLine(order, line)"
             >
               <mat-icon>remove_circle_outline</mat-icon>
+            </button>
+          }
+          @if (editable() && line.status === 'RECEIVED') {
+            <button
+              mat-stroked-button
+              data-testid="deliver-line"
+              (click)="deliverLine(order, line)"
+            >
+              Entregar
             </button>
           }
         </td>

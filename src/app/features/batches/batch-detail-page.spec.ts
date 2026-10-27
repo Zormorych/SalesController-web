@@ -9,6 +9,7 @@ import { provideSpanishLocale } from '../../core/locale';
 import { ConfirmDialog } from '../../shared/confirm-dialog';
 import { FileDownloader } from '../../shared/file-downloader';
 import { AddBatchLinesDialog } from './add-batch-lines-dialog';
+import { ReceiveBatchDialog } from './receive-batch-dialog';
 import { BatchDetailPage } from './batch-detail-page';
 import { BatchDetails, BatchLine, BatchStatus } from './batches.models';
 
@@ -115,13 +116,13 @@ describe('BatchDetailPage', () => {
 
   it.each<[BatchStatus, string[]]>([
     ['OPEN', ['excel', 'edit', 'add-lines', 'send', 'discard', 'remove-line']],
-    ['SENT', ['excel', 'edit']],
+    ['SENT', ['excel', 'edit', 'receive']],
     ['RECEIVED', ['excel', 'edit']],
     ['CANCELLED', []],
   ])('with the batch %s allows only %j', async (status, allowed) => {
     await render({ ...batch, status });
 
-    const all = ['excel', 'edit', 'add-lines', 'send', 'discard', 'remove-line'];
+    const all = ['excel', 'edit', 'add-lines', 'send', 'discard', 'remove-line', 'receive'];
     expect(all.filter((testId) => button(testId) !== null)).toEqual(allowed);
   });
 
@@ -211,5 +212,53 @@ describe('BatchDetailPage', () => {
     expect(page.querySelector('[data-testid="missing"]')?.textContent).toContain(
       'Camiseta Fan · Real Madrid local',
     );
+  });
+
+  it('receives a sent batch saying in the dialog which shirts did not arrive', async () => {
+    await render({ ...batch, status: 'SENT' });
+    dialog.open.mockImplementation((_component, config) => ({
+      afterClosed: () => config.data.save([8]),
+    }));
+
+    button('receive')!.click();
+    const received = http.expectOne('/api/purchasing/batches/4/receive');
+    expect(received.request.body).toEqual({ missingLineIds: [8] });
+    received.flush({ ...batch, status: 'RECEIVED', lines: [batch.lines[0]] });
+    await fixture.whenStable();
+
+    expect(dialog.open.mock.calls[0][0]).toBe(ReceiveBatchDialog);
+    expect(dialog.open.mock.calls[0][1].data.lines).toEqual(batch.lines);
+    expect(page.querySelector('.badge')?.textContent).toContain('Recibido');
+  });
+
+  it('brings back a missing shirt that arrived later, after confirming', async () => {
+    const missing = {
+      lineId: 9,
+      orderId: 6,
+      orderNumber: 'SO-2026-000006',
+      customerName: 'Luis Gómez',
+      productName: 'Camiseta Fan',
+      kitName: 'Real Madrid local',
+      size: 'L',
+      sizeLabel: 'L',
+      status: 'PENDING' as const,
+      customizations: [],
+    };
+    // La que ya se volvió a pedir en otro lote no se puede marcar como llegada aquí
+    await render({
+      ...batch,
+      status: 'RECEIVED',
+      missingLines: [missing, { ...missing, lineId: 10, status: 'ORDERED' }],
+    });
+    confirmDialogs(true);
+
+    expect(page.querySelectorAll('[data-testid="arrived"]')).toHaveLength(1);
+    button('arrived')!.click();
+    http
+      .expectOne({ method: 'POST', url: '/api/purchasing/batches/4/missing-lines/9/arrived' })
+      .flush({ ...batch, status: 'RECEIVED', missingLines: [] });
+    await fixture.whenStable();
+
+    expect(page.querySelector('[data-testid="missing"]')).toBeNull();
   });
 });
