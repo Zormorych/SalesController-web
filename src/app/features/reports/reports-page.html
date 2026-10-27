@@ -1,0 +1,160 @@
+<h1>Informes</h1>
+
+<section>
+  <div class="filters">
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label>Desde</mat-label>
+      <input
+        matInput
+        type="date"
+        name="from"
+        [value]="period().from"
+        (input)="setFrom($any($event.target).value)"
+      />
+    </mat-form-field>
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label>Hasta</mat-label>
+      <input
+        matInput
+        type="date"
+        name="to"
+        [value]="period().to"
+        (input)="setTo($any($event.target).value)"
+      />
+    </mat-form-field>
+    <div class="shortcuts">
+      @for (shortcut of shortcuts; track shortcut.testId) {
+        <button
+          mat-stroked-button
+          [attr.data-testid]="shortcut.testId"
+          (click)="period.set(shortcut.period())"
+        >
+          {{ shortcut.label }}
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (!validPeriod()) {
+    <p class="warning">La fecha de inicio es posterior a la de fin.</p>
+  } @else if (summary.value(); as summary) {
+    <div class="hero" data-testid="total-profit">
+      <span class="label">Beneficio total</span>
+      <span class="value">{{ summary.totalProfit | currency }}</span>
+    </div>
+    <p class="note">
+      Pedidos con fecha en el periodo (venta − coste − envío) más lo vendido del stock.
+    </p>
+
+    <div class="tiles">
+      <div class="tile" data-testid="orders">
+        <span class="label">Pedidos</span><span class="value">{{ summary.orders }}</span>
+      </div>
+      <div class="tile" data-testid="shirts">
+        <span class="label">Camisetas</span><span class="value">{{ summary.shirts }}</span>
+      </div>
+      <div class="tile" data-testid="sale">
+        <span class="label">Venta</span><span class="value">{{ summary.sale | currency }}</span>
+      </div>
+      <div class="tile" data-testid="cost">
+        <span class="label">Coste</span><span class="value">{{ summary.cost | currency }}</span>
+      </div>
+      <div class="tile" data-testid="shipping">
+        <span class="label">Envío</span><span class="value">{{ summary.shipping | currency }}</span>
+      </div>
+      <div class="tile" data-testid="profit">
+        <span class="label">Beneficio de pedidos</span>
+        <span class="value">{{ summary.profit | currency }}</span>
+      </div>
+      <div class="tile" data-testid="resale">
+        <span class="label">Beneficio de reventa</span>
+        <span class="value">{{ summary.resale.profit | currency }}</span>
+        <span class="detail">{{
+          plural(summary.resale.items, 'prenda vendida', 'prendas vendidas')
+        }}</span>
+      </div>
+      <div class="tile" data-testid="collected">
+        <span class="label">Cobrado</span>
+        <span class="value">{{ summary.collected | currency }}</span>
+      </div>
+    </div>
+  }
+</section>
+
+<section>
+  <h2>Trabajo pendiente</h2>
+  @if (pending.value(); as pending) {
+    <div class="tiles">
+      <a class="tile link" data-testid="to-order" routerLink="/lotes/nuevo">
+        <span class="label">Camisetas por pedir</span>
+        <span class="value">{{ pending.shirtsToOrder }}</span>
+      </a>
+      <a class="tile link" data-testid="to-receive" routerLink="/lotes">
+        <span class="label">Camisetas por recibir</span>
+        <span class="value">{{ pending.shirtsToReceive }}</span>
+      </a>
+      <a class="tile link" data-testid="to-deliver" routerLink="/pedidos">
+        <span class="label">Camisetas por entregar</span>
+        <span class="value">{{ pending.shirtsToDeliver }}</span>
+      </a>
+      <a class="tile link" data-testid="to-collect" routerLink="/pedidos">
+        <span class="label">Por cobrar</span>
+        <span class="value">{{ pending.amountToCollect | currency }}</span>
+        <span class="detail">en {{ plural(pending.ordersToCollect, 'pedido', 'pedidos') }}</span>
+      </a>
+      <a class="tile link" data-testid="to-refund" routerLink="/pedidos">
+        <span class="label">Por devolver</span>
+        <span class="value">{{ pending.amountToRefund | currency }}</span>
+      </a>
+      <div class="tile" data-testid="stock">
+        <span class="label">En stock</span>
+        <span class="value">{{ pending.stockValue | currency }}</span>
+        <span class="detail">{{ plural(pending.itemsInStock, 'prenda', 'prendas') }}</span>
+      </div>
+    </div>
+  }
+</section>
+
+<section>
+  <h2>Beneficio por lote</h2>
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="batches.value() ?? []">
+      <ng-container matColumnDef="batchNumber">
+        <th mat-header-cell *matHeaderCellDef>Lote</th>
+        <td mat-cell *matCellDef="let batch">
+          <a [routerLink]="['/lotes', batch.batchId]">{{ batch.batchNumber }}</a>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let batch">{{ statusLabel(batch.status) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="shirts">
+        <th mat-header-cell *matHeaderCellDef class="number">Camisetas</th>
+        <td mat-cell *matCellDef="let batch" class="number">{{ batch.shirts }}</td>
+      </ng-container>
+      <ng-container matColumnDef="sale">
+        <th mat-header-cell *matHeaderCellDef class="number">Venta</th>
+        <td mat-cell *matCellDef="let batch" class="number">{{ batch.sale | currency }}</td>
+      </ng-container>
+      <ng-container matColumnDef="cost">
+        <th mat-header-cell *matHeaderCellDef class="number">Coste</th>
+        <td mat-cell *matCellDef="let batch" class="number">{{ batch.cost | currency }}</td>
+      </ng-container>
+      <ng-container matColumnDef="shipping">
+        <th mat-header-cell *matHeaderCellDef class="number">Envío</th>
+        <td mat-cell *matCellDef="let batch" class="number">{{ batch.shipping | currency }}</td>
+      </ng-container>
+      <ng-container matColumnDef="profit">
+        <th mat-header-cell *matHeaderCellDef class="number">Beneficio</th>
+        <td mat-cell *matCellDef="let batch" class="number">{{ batch.profit | currency }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="batchColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: batchColumns"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="empty" [attr.colspan]="batchColumns.length">Todavía no hay lotes.</td>
+      </tr>
+    </table>
+  </div>
+</section>

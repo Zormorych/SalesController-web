@@ -39,6 +39,7 @@ export class App {
     { path: '/clientes', label: 'Clientes', icon: 'group' },
     { path: '/pedidos', label: 'Pedidos', icon: 'receipt_long' },
     { path: '/lotes', label: 'Lotes', icon: 'local_shipping' },
+    { path: '/informes', label: 'Informes', icon: 'insights' },
   ];
 
   protected readonly narrow = toSignal(

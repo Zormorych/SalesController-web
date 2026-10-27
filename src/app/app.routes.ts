@@ -49,5 +49,10 @@ export const routes: Routes = [
       import('./features/batches/batch-detail-page').then((m) => m.BatchDetailPage),
     title: 'Lote · SalesController',
   },
+  {
+    path: 'informes',
+    loadComponent: () => import('./features/reports/reports-page').then((m) => m.ReportsPage),
+    title: 'Informes · SalesController',
+  },
   { path: '**', redirectTo: '' },
 ];

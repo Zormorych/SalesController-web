@@ -1,0 +1,101 @@
+section {
+  margin-bottom: 32px;
+}
+
+// Filtros en una fila encima de las cifras
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.warning {
+  color: var(--mat-sys-error);
+}
+
+// La cifra principal: una sola, grande y con la misma tipografía que el resto
+.hero {
+  display: flex;
+  flex-direction: column;
+
+  .label {
+    font: var(--mat-sys-title-medium);
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .value {
+    font-family: inherit;
+    font-size: 48px;
+    line-height: 56px;
+    font-weight: 600;
+  }
+}
+
+.note {
+  margin: 4px 0 16px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  background: var(--mat-sys-surface-container-low);
+  color: inherit;
+  text-decoration: none;
+
+  .label {
+    font: var(--mat-sys-label-large);
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .value {
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 600;
+  }
+
+  .detail {
+    font: var(--mat-sys-body-small);
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.link:hover,
+.link:focus-visible {
+  background: var(--mat-sys-surface-container-high);
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+// En las columnas de la tabla sí conviene que los dígitos ocupen lo mismo para que queden alineados
+.number {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}
