@@ -1,0 +1,10 @@
+# Lo que no hace falta enviar a Docker al construir la imagen (se instala o se genera dentro)
+node_modules
+dist
+.angular
+.git
+.github
+.vscode
+coverage
+*.log
+.env

@@ -7,7 +7,8 @@ on:
   workflow_dispatch:
 
 # Cada job es una "stage". "needs" fija el orden:
-#   lint ── test ── build (dist/)
+#   lint ── test ──┬── build (dist/)
+#                  └── docker (imagen)
 # Cada job arranca en una máquina limpia; la caché de npm evita descargar las dependencias cada vez.
 jobs:
   lint:
@@ -64,3 +65,21 @@ jobs:
           name: sales-controller-web
           path: dist/sales-controller-web/browser/
           retention-days: 7
+
+  docker:
+    name: Imagen Docker
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+      # Solo comprueba que el Dockerfile construye la imagen; no la publica en ningún registro
+      - name: Construir la imagen
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: false
+          tags: sales-controller-web:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
