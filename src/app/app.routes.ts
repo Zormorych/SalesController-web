@@ -33,5 +33,21 @@ export const routes: Routes = [
       import('./features/orders/order-detail-page').then((m) => m.OrderDetailPage),
     title: 'Pedido · SalesController',
   },
+  {
+    path: 'lotes',
+    loadComponent: () => import('./features/batches/batches-page').then((m) => m.BatchesPage),
+    title: 'Lotes · SalesController',
+  },
+  {
+    path: 'lotes/nuevo',
+    loadComponent: () => import('./features/batches/new-batch-page').then((m) => m.NewBatchPage),
+    title: 'Nuevo lote · SalesController',
+  },
+  {
+    path: 'lotes/:id',
+    loadComponent: () =>
+      import('./features/batches/batch-detail-page').then((m) => m.BatchDetailPage),
+    title: 'Lote · SalesController',
+  },
   { path: '**', redirectTo: '' },
 ];

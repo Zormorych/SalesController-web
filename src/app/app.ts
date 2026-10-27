@@ -38,6 +38,7 @@ export class App {
     { path: '/catalogo', label: 'Catálogo', icon: 'checkroom' },
     { path: '/clientes', label: 'Clientes', icon: 'group' },
     { path: '/pedidos', label: 'Pedidos', icon: 'receipt_long' },
+    { path: '/lotes', label: 'Lotes', icon: 'local_shipping' },
   ];
 
   protected readonly narrow = toSignal(
