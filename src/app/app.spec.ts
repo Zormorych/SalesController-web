@@ -33,6 +33,7 @@ describe('App', () => {
       'Clientes',
       'Pedidos',
       'Lotes',
+      'Stock',
       'Informes',
     ]);
     expect(links.map((link) => link.getAttribute('href'))).toEqual([
@@ -41,6 +42,7 @@ describe('App', () => {
       '/clientes',
       '/pedidos',
       '/lotes',
+      '/stock',
       '/informes',
     ]);
   });

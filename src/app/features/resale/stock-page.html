@@ -1,0 +1,81 @@
+<h1>Stock y reventa</h1>
+
+<div class="toolbar">
+  <div class="filters" role="group" aria-label="Qué prendas ver">
+    @for (option of filters; track option.testId) {
+      <button
+        [attr.data-testid]="option.testId"
+        [attr.aria-pressed]="status() === option.status"
+        [class.selected]="status() === option.status"
+        mat-stroked-button
+        (click)="status.set(option.status)"
+      >
+        {{ option.label }}
+      </button>
+    }
+  </div>
+  <button mat-flat-button data-testid="new" (click)="create()">
+    <mat-icon>add</mat-icon>
+    Nueva prenda
+  </button>
+</div>
+
+<div class="table-wrapper">
+  <table mat-table [dataSource]="items.value() ?? []">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Prenda</th>
+      <td mat-cell *matCellDef="let item">{{ item.name }}</td>
+    </ng-container>
+    <ng-container matColumnDef="size">
+      <th mat-header-cell *matHeaderCellDef>Talla</th>
+      <td mat-cell *matCellDef="let item">{{ item.size }}</td>
+    </ng-container>
+    <ng-container matColumnDef="origin">
+      <th mat-header-cell *matHeaderCellDef>Origen</th>
+      <td mat-cell *matCellDef="let item">
+        {{ item.origin === 'ORDER_LINE' ? 'De un pedido' : 'Comprada' }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="purchaseCost">
+      <th mat-header-cell *matHeaderCellDef class="number">Coste</th>
+      <td mat-cell *matCellDef="let item" class="number">{{ item.purchaseCost | currency }}</td>
+    </ng-container>
+    <ng-container matColumnDef="askingPrice">
+      <th mat-header-cell *matHeaderCellDef class="number">Anunciada a</th>
+      <td mat-cell *matCellDef="let item" class="number">{{ item.askingPrice | currency }}</td>
+    </ng-container>
+    <ng-container matColumnDef="salePrice">
+      <th mat-header-cell *matHeaderCellDef class="number">Vendida a</th>
+      <td mat-cell *matCellDef="let item" class="number">{{ item.salePrice | currency }}</td>
+    </ng-container>
+    <ng-container matColumnDef="profit">
+      <th mat-header-cell *matHeaderCellDef class="number">Beneficio</th>
+      <td mat-cell *matCellDef="let item" class="number">{{ item.profit | currency }}</td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let item" class="row-actions">
+        <button mat-icon-button matTooltip="Editar" aria-label="Editar" (click)="edit(item)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        @if (item.status === 'AVAILABLE') {
+          <button mat-stroked-button data-testid="sell" (click)="sell(item)">Vender</button>
+        } @else {
+          <button mat-button data-testid="unsell" (click)="unsell(item)">Deshacer venta</button>
+        }
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="empty" [attr.colspan]="columns.length">
+        @if (items.isLoading()) {
+          Cargando…
+        } @else {
+          No hay prendas.
+        }
+      </td>
+    </tr>
+  </table>
+</div>

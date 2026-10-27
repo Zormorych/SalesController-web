@@ -106,11 +106,11 @@
         <span class="label">Por devolver</span>
         <span class="value">{{ pending.amountToRefund | currency }}</span>
       </a>
-      <div class="tile" data-testid="stock">
+      <a class="tile link" data-testid="stock" routerLink="/stock">
         <span class="label">En stock</span>
         <span class="value">{{ pending.stockValue | currency }}</span>
         <span class="detail">{{ plural(pending.itemsInStock, 'prenda', 'prendas') }}</span>
-      </div>
+      </a>
     </div>
   }
 </section>

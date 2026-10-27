@@ -54,5 +54,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/reports/reports-page').then((m) => m.ReportsPage),
     title: 'Informes · SalesController',
   },
+  {
+    path: 'stock',
+    loadComponent: () => import('./features/resale/stock-page').then((m) => m.StockPage),
+    title: 'Stock · SalesController',
+  },
   { path: '**', redirectTo: '' },
 ];
