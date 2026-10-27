@@ -133,6 +133,15 @@
             >
               Entregar
             </button>
+            <button
+              mat-icon-button
+              data-testid="to-stock"
+              matTooltip="El cliente ya no la quiere: pasar a stock"
+              aria-label="Pasar a stock"
+              (click)="moveToStock(order, line)"
+            >
+              <mat-icon>inventory_2</mat-icon>
+            </button>
           }
         </td>
       </ng-container>
