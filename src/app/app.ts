@@ -39,6 +39,7 @@ export class App {
     { path: '/clientes', label: 'Clientes', icon: 'group' },
     { path: '/pedidos', label: 'Pedidos', icon: 'receipt_long' },
     { path: '/lotes', label: 'Lotes', icon: 'local_shipping' },
+    { path: '/stock', label: 'Stock', icon: 'inventory_2' },
     { path: '/informes', label: 'Informes', icon: 'insights' },
   ];
 

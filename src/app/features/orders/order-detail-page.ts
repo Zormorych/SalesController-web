@@ -14,6 +14,9 @@ import { ConfirmDialog, ConfirmDialogData } from '../../shared/confirm-dialog';
 import { whatsappUrl } from '../../shared/whatsapp';
 import { CatalogService } from '../catalog/catalog.service';
 import { OrderPayments } from '../payments/order-payments';
+import { MoveToStockDialog, MoveToStockDialogData } from '../resale/move-to-stock-dialog';
+import { ResaleItem } from '../resale/resale.models';
+import { ResaleService } from '../resale/resale.service';
 import { CustomersService } from '../customers/customers.service';
 import { LINE_STATUS_LABELS, PROGRESS_LABELS } from './order-labels';
 import { OrderHeaderDialog, OrderHeaderDialogData } from './order-header-dialog';
@@ -43,6 +46,7 @@ export class OrderDetailPage {
   private readonly catalogService = inject(CatalogService);
   private readonly customersService = inject(CustomersService);
   private readonly dialog = inject(MatDialog);
+  private readonly resaleService = inject(ResaleService);
 
   // Viene de la ruta /pedidos/:id
   readonly id = input.required<string>();
@@ -114,6 +118,22 @@ export class OrderDetailPage {
   }
 
   // Entregar una camiseta en mano es rápido: sin confirmación. Entregarlas todas sí la pide
+  // El cliente ya no quiere una camiseta recibida: pasa a stock. Cambia el pedido (estado, quizá el total
+  // o incluso se cancela), así que se vuelve a leer entero
+  protected moveToStock(order: OrderDetails, line: OrderLine): void {
+    this.dialog
+      .open<MoveToStockDialog, MoveToStockDialogData, ResaleItem>(MoveToStockDialog, {
+        data: {
+          line,
+          save: (choice) => this.resaleService.moveFromOrderLine({ lineId: line.id, ...choice }),
+        },
+        width: '480px',
+      })
+      .afterClosed()
+      .pipe(filter((item) => !!item))
+      .subscribe(() => this.order.reload());
+  }
+
   protected deliverLine(order: OrderDetails, line: OrderLine): void {
     this.ordersService
       .deliverLine(order.id, line.id)

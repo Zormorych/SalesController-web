@@ -7,6 +7,7 @@ import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { provideSpanishLocale } from '../../core/locale';
 import { ConfirmDialog } from '../../shared/confirm-dialog';
+import { MoveToStockDialog } from '../resale/move-to-stock-dialog';
 import { OrderDetailPage } from './order-detail-page';
 import { OrderLineDialog } from './order-line-dialog';
 import { OrderDetails, OrderLine, OrderLineRequest } from './orders.models';
@@ -282,5 +283,27 @@ describe('OrderDetailPage', () => {
 
     expect(rows().map((row) => row[3])).toEqual(['Por pedir', 'Entregada', 'Entregada']);
     expect(button('deliver-all')).toBeNull();
+  });
+
+  it('moves a received shirt that the customer no longer wants to stock and reloads the order', async () => {
+    const received: OrderLine = { ...ordered, id: 8, status: 'RECEIVED' };
+    await render({ ...order, lines: [pending, received] });
+    expect(button('to-stock', page.querySelectorAll('tr[mat-row]')[0])).toBeNull();
+    dialog.open.mockImplementation((_component, config) => ({
+      afterClosed: () => config.data.save({ customerPays: false, askingPrice: null }),
+    }));
+
+    button('to-stock')!.click();
+    const moved = http.expectOne('/api/resale/items/from-order-line');
+    expect(moved.request.body).toEqual({ lineId: 8, customerPays: false, askingPrice: null });
+    moved.flush({ id: 3 });
+    TestBed.tick();
+    http
+      .expectOne('/api/sales/orders/5')
+      .flush({ ...order, lines: [pending, { ...received, status: 'STOCKED_REFUNDED' }] });
+    await fixture.whenStable();
+
+    expect(dialog.open.mock.calls[0][0]).toBe(MoveToStockDialog);
+    expect(rows()[1][3]).toBe('En stock (sin cobrar)');
   });
 });

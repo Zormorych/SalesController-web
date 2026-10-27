@@ -24,3 +24,11 @@ Pantallas en el mismo orden en que se construyó el backend ([ROADMAP del backen
 | 6    | `feature/receive-deliver` | **Recepción y entrega**: recibir un lote marcando las que no llegan, llegada tardía, entregar camisetas                                                           | `/api/purchasing/batches/{id}/receive`, `/api/sales/orders/{id}/deliver` |
 | 7    | `feature/reports`         | **Informes**: resumen por periodo, beneficio por lote y trabajo pendiente                                                                                         | `/api/reports/*`                                                         |
 | 8    | `feature/resale`          | **Stock y reventa**: prendas, venta y deshacer venta, pasar a stock una camiseta del pedido                                                                       | `/api/resale/items`                                                      |
+
+**Estado:** pasos 0 a 8 terminados; cada pantalla cubre todo lo que ofrece el backend.
+
+## Después
+
+- **Despliegue** del front y del back. En producción el navegador ya no pasa por el proxy de desarrollo: habrá que configurar CORS en el backend o servir los dos bajo el mismo dominio.
+- **Seguridad:** login y JWT, con un interceptor que añada el token a cada petición.
+- **Catálogo de equipaciones:** elegir "Selección Española blanca 2 estrellas" de una lista en vez de escribirla.

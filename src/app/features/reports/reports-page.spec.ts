@@ -112,6 +112,7 @@ describe('ReportsPage', () => {
     expect(page.querySelector('[data-testid="to-order"]')?.getAttribute('href')).toBe(
       '/lotes/nuevo',
     );
+    expect(page.querySelector('[data-testid="stock"]')?.getAttribute('href')).toBe('/stock');
   });
 
   it('lists the profit of each batch', () => {
