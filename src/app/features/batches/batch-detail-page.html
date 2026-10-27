@@ -53,6 +53,12 @@
               Descartar lote
             </button>
           }
+          @if (batch.status === 'SENT') {
+            <button mat-flat-button data-testid="receive" (click)="receive(batch)">
+              <mat-icon>inventory</mat-icon>
+              Recibir lote
+            </button>
+          }
         </div>
       }
     </mat-card-content>
@@ -186,6 +192,17 @@
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>Estado actual</th>
             <td mat-cell *matCellDef="let line">{{ lineStatusLabel(line.status) }}</td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let line" class="row-actions">
+              <!-- Si ya se volvió a pedir en otro lote, se recibirá con ese lote -->
+              @if (batch.status === 'RECEIVED' && line.status === 'PENDING') {
+                <button mat-stroked-button data-testid="arrived" (click)="markArrived(batch, line)">
+                  Ha llegado
+                </button>
+              }
+            </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="missingColumns"></tr>

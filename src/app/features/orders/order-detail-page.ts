@@ -113,6 +113,24 @@ export class OrderDetailPage {
       .subscribe((updated) => this.order.set(updated));
   }
 
+  // Entregar una camiseta en mano es rápido: sin confirmación. Entregarlas todas sí la pide
+  protected deliverLine(order: OrderDetails, line: OrderLine): void {
+    this.ordersService
+      .deliverLine(order.id, line.id)
+      .subscribe((updated) => this.order.set(updated));
+  }
+
+  protected deliverAll(order: OrderDetails): void {
+    const count = order.lineCounts.received;
+    this.confirm({
+      title: `¿Entregar ${count === 1 ? 'la camiseta recibida' : `las ${count} camisetas recibidas`}?`,
+      message: `${count === 1 ? 'Se marcará como entregada' : 'Se marcarán como entregadas'} a ${order.customer?.name ?? 'el cliente'}.`,
+      confirm: 'Entregar',
+    })
+      .pipe(switchMap(() => this.ordersService.deliverAll(order.id)))
+      .subscribe((updated) => this.order.set(updated));
+  }
+
   protected cancelOrder(order: OrderDetails): void {
     this.confirm({
       title: `¿Cancelar el pedido ${order.orderNumber}?`,

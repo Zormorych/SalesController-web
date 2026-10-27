@@ -231,8 +231,56 @@ describe('OrderDetailPage', () => {
       lines: [{ ...pending, status: 'CANCELLED' }],
     });
 
-    for (const testId of ['add-line', 'edit-header', 'cancel-order', 'edit-line', 'cancel-line']) {
+    for (const testId of [
+      'add-line',
+      'edit-header',
+      'cancel-order',
+      'edit-line',
+      'cancel-line',
+      'deliver-line',
+      'deliver-all',
+    ]) {
       expect(button(testId)).toBeNull();
     }
+  });
+
+  it('delivers a received shirt, and all the received ones after confirming', async () => {
+    const received: OrderLine = { ...ordered, id: 8, status: 'RECEIVED' };
+    const withReceived: OrderDetails = {
+      ...order,
+      progress: 'IN_PROGRESS',
+      lines: [pending, received, { ...received, id: 10 }],
+      lineCounts: { ...order.lineCounts, ordered: 0, received: 2 },
+    };
+    await render(withReceived);
+    const rowsWithDeliver = Array.from(page.querySelectorAll('tr[mat-row]')).map(
+      (row) => button('deliver-line', row) !== null,
+    );
+    expect(rowsWithDeliver).toEqual([false, true, true]);
+
+    button('deliver-line')!.click();
+    http.expectOne({ method: 'POST', url: '/api/sales/orders/5/lines/8/deliver' }).flush({
+      ...withReceived,
+      lines: [pending, { ...received, status: 'DELIVERED' }, { ...received, id: 10 }],
+      lineCounts: { ...withReceived.lineCounts, received: 1, delivered: 1 },
+    });
+    await fixture.whenStable();
+    expect(rows()[1][3]).toBe('Entregada');
+
+    answerDialogs(true);
+    button('deliver-all')!.click();
+    http.expectOne({ method: 'POST', url: '/api/sales/orders/5/deliver' }).flush({
+      ...withReceived,
+      lines: [
+        pending,
+        { ...received, status: 'DELIVERED' },
+        { ...received, id: 10, status: 'DELIVERED' },
+      ],
+      lineCounts: { ...withReceived.lineCounts, received: 0, delivered: 2 },
+    });
+    await fixture.whenStable();
+
+    expect(rows().map((row) => row[3])).toEqual(['Por pedir', 'Entregada', 'Entregada']);
+    expect(button('deliver-all')).toBeNull();
   });
 });

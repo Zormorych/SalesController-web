@@ -54,6 +54,16 @@ describe('BatchesService', () => {
     http.expectOne({ method: 'POST', url: '/api/purchasing/batches/4/cancel' });
   });
 
+  it('receives a batch saying which shirts did not arrive, and a late arrival', () => {
+    service.receive(4, [8]).subscribe();
+    service.markArrived(4, 8).subscribe();
+
+    expect(http.expectOne('/api/purchasing/batches/4/receive').request.body).toEqual({
+      missingLineIds: [8],
+    });
+    http.expectOne({ method: 'POST', url: '/api/purchasing/batches/4/missing-lines/8/arrived' });
+  });
+
   it('downloads the Excel with the file name the backend gives', () => {
     let file: { name: string; content: Blob } | undefined;
 

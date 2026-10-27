@@ -39,6 +39,15 @@ export class OrdersService {
     return this.http.post<OrderDetails>(`${BASE}/${id}/cancel`, null);
   }
 
+  // Entregar al cliente una camiseta ya recibida, o todas las recibidas de golpe
+  deliverLine(id: number, lineId: number): Observable<OrderDetails> {
+    return this.http.post<OrderDetails>(`${BASE}/${id}/lines/${lineId}/deliver`, null);
+  }
+
+  deliverAll(id: number): Observable<OrderDetails> {
+    return this.http.post<OrderDetails>(`${BASE}/${id}/deliver`, null);
+  }
+
   addLine(id: number, line: OrderLineRequest): Observable<OrderDetails> {
     return this.http.post<OrderDetails>(`${BASE}/${id}/lines`, line);
   }

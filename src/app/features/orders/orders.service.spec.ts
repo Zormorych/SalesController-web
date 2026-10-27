@@ -50,6 +50,14 @@ describe('OrdersService', () => {
     expect(updated.request.body).toEqual(order);
   });
 
+  it('delivers one received shirt or all of them', () => {
+    service.deliverLine(5, 9).subscribe();
+    service.deliverAll(5).subscribe();
+
+    http.expectOne({ method: 'POST', url: '/api/sales/orders/5/lines/9/deliver' });
+    http.expectOne({ method: 'POST', url: '/api/sales/orders/5/deliver' });
+  });
+
   it('adds, edits and cancels lines, and cancels the whole order', () => {
     service.addLine(5, line).subscribe();
     service.updateLine(5, 9, line).subscribe();
