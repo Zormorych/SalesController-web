@@ -66,6 +66,13 @@ describe('CatalogList', () => {
     ]);
   });
 
+  it('shows the description under the name, with its address as a link', async () => {
+    const fixture = await render([{ ...fan, description: 'https://fabricante.example/fan-1' }]);
+    const cell = (fixture.nativeElement as HTMLElement).querySelector('tr[mat-row] td')!;
+
+    expect(cell.querySelector('a')?.getAttribute('href')).toBe('https://fabricante.example/fan-1');
+  });
+
   it('asks for the inactive ones too when the switch is turned on', async () => {
     const fixture = await render([fan]);
     const page = fixture.nativeElement as HTMLElement;
@@ -81,7 +88,12 @@ describe('CatalogList', () => {
   it('creates an item with the dialog data and reloads the list', async () => {
     const fixture = await render([]);
     const page = fixture.nativeElement as HTMLElement;
-    const request = { name: 'Camiseta Fan', salePrice: 15, purchaseCost: 6.5 };
+    const request = {
+      name: 'Camiseta Fan',
+      salePrice: 15,
+      purchaseCost: 6.5,
+      description: null,
+    };
     // Como el diálogo real: guarda con la función que recibe y se cierra con lo guardado
     dialog.open.mockImplementation((_component, config) => ({
       afterClosed: () => config.data.save(request),

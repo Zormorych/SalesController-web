@@ -31,3 +31,9 @@
   text-align: center;
   color: var(--mat-sys-on-surface-variant);
 }
+
+.description {
+  display: block;
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}

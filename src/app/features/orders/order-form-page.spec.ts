@@ -22,6 +22,7 @@ describe('OrderFormPage', () => {
     name: 'Camiseta Fan',
     salePrice: 15,
     purchaseCost: 6.5,
+    description: 'Ver https://fabricante.example/fan-1',
     active: true,
   };
   const nameAndNumber: CatalogItem = {
@@ -97,6 +98,18 @@ describe('OrderFormPage', () => {
       today(),
     );
     expect(page.querySelectorAll('[data-testid="line"]')).toHaveLength(1);
+  });
+
+  it('shows the description of the chosen product, with its link, for quick access', async () => {
+    expect(page.querySelector('[data-testid="product-description"]')).toBeNull();
+
+    await choose('product', /Camiseta Fan/);
+
+    const description = page.querySelector('[data-testid="product-description"]')!;
+    expect(description.textContent).toContain('Ver https://fabricante.example/fan-1');
+    expect(description.querySelector('a')?.getAttribute('href')).toBe(
+      'https://fabricante.example/fan-1',
+    );
   });
 
   it('creates an order with catalog prices and a free customization, then opens it', async () => {
