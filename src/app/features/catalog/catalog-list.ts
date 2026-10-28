@@ -8,6 +8,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { filter } from 'rxjs';
+import { LinkedText } from '../../shared/linked-text';
 import { CatalogItemDialog, CatalogItemDialogData } from './catalog-item-dialog';
 import { CATALOG_LABELS, CatalogItem, CatalogKind } from './catalog.models';
 import { CatalogService } from './catalog.service';
@@ -22,6 +23,7 @@ import { CatalogService } from './catalog.service';
     MatIconModule,
     MatSlideToggleModule,
     MatTooltipModule,
+    LinkedText,
   ],
   templateUrl: './catalog-list.html',
   styleUrl: './catalog-list.scss',

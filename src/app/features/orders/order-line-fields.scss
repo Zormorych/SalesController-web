@@ -33,3 +33,9 @@
   gap: 4px;
   height: 56px;
 }
+
+.product-description {
+  margin: -8px 0 12px;
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}

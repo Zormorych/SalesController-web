@@ -6,6 +6,8 @@ export interface CatalogItem {
   name: string;
   salePrice: number;
   purchaseCost: number;
+  // Texto libre: por ejemplo, la URL del producto en la web del fabricante
+  description?: string | null;
   active: boolean;
 }
 
@@ -13,6 +15,7 @@ export interface CatalogItemRequest {
   name: string;
   salePrice: number;
   purchaseCost: number;
+  description: string | null;
 }
 
 export const CATALOG_LABELS: Record<CatalogKind, { singular: string; newItem: string }> = {

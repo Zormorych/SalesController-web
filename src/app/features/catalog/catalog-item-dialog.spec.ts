@@ -31,7 +31,7 @@ describe('CatalogItemDialog', () => {
   }
 
   function type(page: HTMLElement, name: string, value: string) {
-    const input = page.querySelector<HTMLInputElement>(`input[formControlName="${name}"]`)!;
+    const input = page.querySelector<HTMLInputElement>(`[formControlName="${name}"]`)!;
     input.value = value;
     input.dispatchEvent(new Event('input'));
   }
@@ -40,19 +40,21 @@ describe('CatalogItemDialog', () => {
     page.querySelector<HTMLButtonElement>('button[type="submit"]')!.click();
   }
 
-  it('saves a product with its name and prices and closes', async () => {
+  it('saves a product with its name, prices and description, and closes', async () => {
     const page = await open({ kind: 'products' });
 
     expect(page.querySelector('h2')?.textContent).toContain('Nuevo producto');
     type(page, 'name', '  Camiseta Player  ');
     type(page, 'salePrice', '17');
     type(page, 'purchaseCost', '7.70');
+    type(page, 'description', '  https://fabricante.example/player-123  ');
     submit(page);
 
     expect(save).toHaveBeenCalledWith({
       name: 'Camiseta Player',
       salePrice: 17,
       purchaseCost: 7.7,
+      description: 'https://fabricante.example/player-123',
     });
     expect(dialogRef.close).toHaveBeenCalledWith(saved);
   });
@@ -67,7 +69,12 @@ describe('CatalogItemDialog', () => {
     type(page, 'salePrice', '1.50');
     submit(page);
 
-    expect(save).toHaveBeenCalledWith({ name: 'Parche', salePrice: 1.5, purchaseCost: 0.5 });
+    expect(save).toHaveBeenCalledWith({
+      name: 'Parche',
+      salePrice: 1.5,
+      purchaseCost: 0.5,
+      description: null,
+    });
   });
 
   it('stays open when the backend rejects it', async () => {

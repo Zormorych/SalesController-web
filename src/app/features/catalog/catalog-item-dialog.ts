@@ -43,6 +43,7 @@ export class CatalogItemDialog {
     name: [this.data.item?.name ?? '', [Validators.required, notBlank, Validators.maxLength(120)]],
     salePrice: [this.data.item?.salePrice ?? null, [Validators.required, Validators.min(0)]],
     purchaseCost: [this.data.item?.purchaseCost ?? null, [Validators.required, Validators.min(0)]],
+    description: [this.data.item?.description ?? '', Validators.maxLength(1000)],
   });
 
   protected save(): void {
@@ -51,10 +52,15 @@ export class CatalogItemDialog {
       return;
     }
     // Los validadores garantizan que no hay nulos
-    const { name, salePrice, purchaseCost } = this.form.getRawValue();
+    const { name, salePrice, purchaseCost, description } = this.form.getRawValue();
     this.saving.set(true);
     this.data
-      .save({ name: name!.trim(), salePrice: salePrice!, purchaseCost: purchaseCost! })
+      .save({
+        name: name!.trim(),
+        salePrice: salePrice!,
+        purchaseCost: purchaseCost!,
+        description: description?.trim() || null,
+      })
       .subscribe({
         next: (item) => this.dialogRef.close(item),
         error: () => this.saving.set(false),

@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { LinkedText } from '../../shared/linked-text';
 import { CatalogItem, Size } from '../catalog/catalog.models';
 import { customizationForm, LineForm } from './order-line-form';
 
@@ -22,6 +23,7 @@ import { customizationForm, LineForm } from './order-line-form';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    LinkedText,
   ],
   templateUrl: './order-line-fields.html',
   styleUrl: './order-line-fields.scss',
@@ -31,6 +33,11 @@ export class OrderLineFields {
   readonly products = input.required<CatalogItem[]>();
   readonly customizations = input.required<CatalogItem[]>();
   readonly sizes = input.required<Size[]>();
+
+  // Descripción del producto elegido (por ejemplo, su URL en la web del fabricante) para tenerla a mano
+  protected productDescription(productId: number | null): string | null {
+    return this.products().find((item) => item.id === productId)?.description ?? null;
+  }
 
   // Al elegir el producto se copian su precio y su coste del catálogo (se pueden cambiar después)
   protected productChosen(productId: number): void {

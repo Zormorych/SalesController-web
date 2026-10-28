@@ -27,6 +27,18 @@
         <mat-error>Indica un coste de 0 o más</mat-error>
       }
     </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Descripción</mat-label>
+      <textarea
+        matInput
+        formControlName="description"
+        rows="3"
+        maxlength="1000"
+        placeholder="Notas o la URL del producto en la web del fabricante"
+      ></textarea>
+      <mat-hint>Las direcciones web se convierten en enlaces</mat-hint>
+    </mat-form-field>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">

@@ -30,7 +30,12 @@ describe('CatalogService', () => {
   });
 
   it('creates and updates an item with its prices', () => {
-    const request = { name: 'Camiseta Player', salePrice: 17, purchaseCost: 7.7 };
+    const request = {
+      name: 'Camiseta Player',
+      salePrice: 17,
+      purchaseCost: 7.7,
+      description: null,
+    };
 
     service.create('products', request).subscribe();
     service.update('products', 4, request).subscribe();
