@@ -52,7 +52,8 @@ export class OrderFormPage {
   protected readonly sizes = rxResource({ stream: () => this.catalogService.sizes() });
 
   protected readonly form = new FormGroup({
-    customerId: new FormControl<number | null>(null, Validators.required),
+    // Vacío: el pedido es para uno mismo
+    customerId: new FormControl<number | null>(null),
     orderDate: new FormControl(today(), { nonNullable: true, validators: Validators.required }),
     notes: new FormControl('', { nonNullable: true, validators: Validators.maxLength(500) }),
     lines: new FormArray<LineForm>([lineForm()]),
@@ -83,7 +84,7 @@ export class OrderFormPage {
     this.saving.set(true);
     this.ordersService
       .create({
-        customerId: customerId!,
+        customerId,
         orderDate,
         notes: notes.trim() || null,
         lines: this.form.controls.lines.controls.map(toLineRequest),

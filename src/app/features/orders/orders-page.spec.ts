@@ -69,6 +69,18 @@ describe('OrdersPage', () => {
     expect(page.querySelector('tr[mat-row] a')?.getAttribute('href')).toBe('/pedidos/5');
   });
 
+  it('says when an order has no customer', async () => {
+    const fixture = TestBed.createComponent(OrdersPage);
+    TestBed.tick();
+    http.expectOne('/api/customers').flush([ana]);
+    http.expectOne('/api/sales/orders').flush([{ ...order, customerId: null, customerName: null }]);
+    await fixture.whenStable();
+
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelectorAll('tr[mat-row] td')[2].textContent,
+    ).toContain('Sin cliente');
+  });
+
   it('shows only the orders of the chosen customer', async () => {
     const fixture = await render();
     const loader = TestbedHarnessEnvironment.loader(fixture);

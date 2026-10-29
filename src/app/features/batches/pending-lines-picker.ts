@@ -35,7 +35,7 @@ import { PendingLine } from './batches.models';
         </ng-container>
         <ng-container matColumnDef="customerName">
           <th mat-header-cell *matHeaderCellDef>Cliente</th>
-          <td mat-cell *matCellDef="let line">{{ line.customerName }}</td>
+          <td mat-cell *matCellDef="let line">{{ line.customerName ?? 'Sin cliente' }}</td>
         </ng-container>
         <ng-container matColumnDef="shirt">
           <th mat-header-cell *matHeaderCellDef>Camiseta</th>

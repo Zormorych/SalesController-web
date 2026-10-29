@@ -15,8 +15,9 @@ export interface PendingLine {
   orderId: number;
   orderNumber: string;
   orderDate: string;
-  customerId: number;
-  customerName: string;
+  // Nulos si el pedido es para uno mismo
+  customerId: number | null;
+  customerName: string | null;
   productId: number;
   productName: string;
   kitName: string;
@@ -44,7 +45,7 @@ export interface BatchLine {
   orderId: number;
   orderNumber: string;
   orderDate: string;
-  customerName: string;
+  customerName: string | null;
   productName: string;
   kitName: string;
   size: string;
@@ -62,7 +63,7 @@ export interface MissingLine {
   lineId: number;
   orderId: number;
   orderNumber: string;
-  customerName: string;
+  customerName: string | null;
   productName: string;
   kitName: string;
   size: string;
