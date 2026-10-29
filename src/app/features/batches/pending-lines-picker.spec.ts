@@ -41,6 +41,15 @@ describe('PendingLinesPicker', () => {
     ]);
   });
 
+  it('says when a shirt has no customer', async () => {
+    fixture.componentRef.setInput('lines', [
+      pendingLine(9, { customerId: null, customerName: null }),
+    ]);
+    await fixture.whenStable();
+
+    expect(page.querySelector('tr[mat-row]')?.textContent).toContain('Sin cliente');
+  });
+
   it('selects shirts one by one or all at once', async () => {
     await toggle(2);
     expect(fixture.componentInstance.selected()).toEqual([8]);

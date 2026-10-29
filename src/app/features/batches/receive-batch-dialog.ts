@@ -28,7 +28,7 @@ export interface ReceiveBatchDialogData {
           @for (line of data.lines; track line.lineId) {
             <li>
               <mat-checkbox [checked]="missing().has(line.lineId)" (change)="toggle(line.lineId)">
-                {{ line.customerName }} · {{ text(line) }} · {{ line.sizeLabel }}
+                {{ line.customerName ?? 'Sin cliente' }} · {{ text(line) }} · {{ line.sizeLabel }}
               </mat-checkbox>
             </li>
           }

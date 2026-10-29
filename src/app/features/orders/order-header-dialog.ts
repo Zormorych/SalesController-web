@@ -31,9 +31,10 @@ export interface OrderHeaderDialogData {
     <h2 mat-dialog-title>Editar pedido</h2>
     <form [formGroup]="form" (ngSubmit)="save()">
       <mat-dialog-content class="fields">
-        <mat-form-field>
+        <mat-form-field floatLabel="always">
           <mat-label>Cliente</mat-label>
-          <mat-select formControlName="customerId">
+          <mat-select formControlName="customerId" placeholder="Sin cliente (para mí)">
+            <mat-option [value]="null">Sin cliente (para mí)</mat-option>
             @for (customer of data.customers; track customer.id) {
               <mat-option [value]="customer.id">{{ customer.name }}</mat-option>
             }
@@ -62,10 +63,8 @@ export class OrderHeaderDialog {
 
   protected readonly saving = signal(false);
   protected readonly form = new FormGroup({
-    customerId: new FormControl(this.data.header.customerId, {
-      nonNullable: true,
-      validators: Validators.required,
-    }),
+    // Vacío: el pedido es para uno mismo
+    customerId: new FormControl<number | null>(this.data.header.customerId),
     orderDate: new FormControl(this.data.header.orderDate, {
       nonNullable: true,
       validators: Validators.required,

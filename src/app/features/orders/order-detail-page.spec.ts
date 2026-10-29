@@ -157,6 +157,13 @@ describe('OrderDetailPage', () => {
     expect(totals).toContain('2 camisetas');
   });
 
+  it('says when the order has no customer, without WhatsApp link', async () => {
+    await render({ ...order, customer: null });
+
+    expect(page.querySelector('[data-testid="customer"]')?.textContent).toContain('Sin cliente');
+    expect(page.querySelector('a[data-testid="whatsapp"]')).toBeNull();
+  });
+
   it('lets edit or cancel only the shirts not yet ordered', async () => {
     await render(order);
     const [first, second] = Array.from(page.querySelectorAll('tr[mat-row]'));

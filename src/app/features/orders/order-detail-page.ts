@@ -85,7 +85,7 @@ export class OrderDetailPage {
         switchMap((customers) =>
           this.openDialog<OrderHeaderDialog, OrderHeaderDialogData>(OrderHeaderDialog, {
             header: {
-              customerId: order.customer?.id ?? 0,
+              customerId: order.customer?.id ?? null,
               orderDate: order.orderDate,
               notes: order.notes,
             },
@@ -144,7 +144,7 @@ export class OrderDetailPage {
     const count = order.lineCounts.received;
     this.confirm({
       title: `¿Entregar ${count === 1 ? 'la camiseta recibida' : `las ${count} camisetas recibidas`}?`,
-      message: `${count === 1 ? 'Se marcará como entregada' : 'Se marcarán como entregadas'} a ${order.customer?.name ?? 'el cliente'}.`,
+      message: `${count === 1 ? 'Se marcará como entregada' : 'Se marcarán como entregadas'}${order.customer ? ` a ${order.customer.name}` : ''}.`,
       confirm: 'Entregar',
     })
       .pipe(switchMap(() => this.ordersService.deliverAll(order.id)))

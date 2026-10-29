@@ -144,7 +144,20 @@ describe('OrderFormPage', () => {
     ).toContain('17,00 €');
   });
 
-  it('does not send an order without customer or kit name', async () => {
+  it('creates an order without customer when it is for myself', async () => {
+    vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    await choose('product', /Camiseta Fan/);
+    type('input[formControlName="kitName"]', 'Betis local');
+    await choose('size', 'M');
+
+    await click('save');
+    const created = http.expectOne({ method: 'POST', url: '/api/sales/orders' });
+    expect(created.request.body.customerId).toBeNull();
+    created.flush({ id: 10 });
+    await fixture.whenStable();
+  });
+
+  it('does not send an order without kit name', async () => {
     await click('save');
 
     http.expectNone({ method: 'POST', url: '/api/sales/orders' });

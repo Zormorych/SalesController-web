@@ -15,8 +15,8 @@
     <mat-card-content>
       <dl>
         <dt>Cliente</dt>
-        <dd>
-          {{ order.customer?.name }}
+        <dd data-testid="customer">
+          {{ order.customer?.name ?? 'Sin cliente' }}
           @if (whatsappUrl(order.customer?.phone ?? null); as url) {
             ·
             <a data-testid="whatsapp" [href]="url" target="_blank" rel="noopener">{{

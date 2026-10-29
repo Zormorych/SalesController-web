@@ -2,15 +2,19 @@
 
 <form [formGroup]="form" (ngSubmit)="save()">
   <div class="header">
-    <mat-form-field class="customer">
+    <mat-form-field class="customer" floatLabel="always">
       <mat-label>Cliente</mat-label>
-      <mat-select formControlName="customerId" data-testid="customer">
+      <mat-select
+        formControlName="customerId"
+        data-testid="customer"
+        placeholder="Sin cliente (para mí)"
+      >
+        <mat-option [value]="null">Sin cliente (para mí)</mat-option>
         @for (customer of customers.value() ?? []; track customer.id) {
           <mat-option [value]="customer.id">{{ customer.name }}</mat-option>
         }
       </mat-select>
       <mat-hint>¿No está? Créalo en <a routerLink="/clientes">Clientes</a></mat-hint>
-      <mat-error>Elige el cliente</mat-error>
     </mat-form-field>
 
     <mat-form-field>

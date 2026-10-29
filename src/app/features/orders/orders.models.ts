@@ -29,8 +29,9 @@ export interface OrderSummary {
   orderDate: string;
   status: OrderStatus;
   progress: OrderProgress;
-  customerId: number;
-  customerName: string;
+  // Nulos si el pedido es para uno mismo
+  customerId: number | null;
+  customerName: string | null;
   activeLines: number;
   totalSale: number;
   totalProfit: number;
@@ -93,14 +94,15 @@ export interface OrderLineRequest {
 }
 
 export interface CreateOrderRequest {
-  customerId: number;
+  // null: pedido para uno mismo
+  customerId: number | null;
   orderDate: string | null;
   notes: string | null;
   lines: OrderLineRequest[];
 }
 
 export interface UpdateOrderRequest {
-  customerId: number;
+  customerId: number | null;
   orderDate: string;
   notes: string | null;
 }
